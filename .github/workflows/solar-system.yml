@@ -33,6 +33,17 @@ jobs:
     
         - name: Install Dependencies
           run: npm install
+
+        - name: Check Code Coverage
+          continue-on-error: true
+          run: npm run Coverage
+
+        - name: Archive Test Result
+          uses: actions/upload-artifact@v3
+          with:
+            name: Code-Coverage-Result
+            path: Coverage
+            retention-days: 5
     
         - name: Unit Testing
           run: npm test
