@@ -16,11 +16,11 @@ jobs:
         # runs-on: ubuntu-latest
         strategy:
           matrix:
-            node_version: [18, 19, 20]
-            os: [ubuntu_latest, macos-latest]
-            exclude:
-              - node_version: 18
-                os: macos-latest
+            node_version: [18, 19, 20,24]
+            os: [ubuntu_latest]
+            # exclude:
+            #   - node_version: 18
+            #     os: macos-latest
         runs-on: ${{ matrix.os }}
         steps:
         - name: Checkout Repository
