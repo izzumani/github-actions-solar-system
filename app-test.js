@@ -1,5 +1,6 @@
 let mongoose = require("mongoose");
-let server = require("./app");
+let sinon = require("sinon");
+let { app: server, planetModel } = require("./app");
 let chai = require("chai");
 let chaiHttp = require("chai-http");
 
@@ -7,6 +8,33 @@ let chaiHttp = require("chai-http");
 // Assertion 
 chai.should();
 chai.use(chaiHttp); 
+
+// Mock planet data
+const planets = {
+    1: { id: 1, name: "Mercury" },
+    2: { id: 2, name: "Venus" },
+    3: { id: 3, name: "Earth" },
+    4: { id: 4, name: "Mars" },
+    5: { id: 5, name: "Jupiter" },
+    6: { id: 6, name: "Saturn" },
+    7: { id: 7, name: "Uranus" },
+    8: { id: 8, name: "Neptune" },
+};
+
+beforeEach(() => {
+    sinon.stub(planetModel, "findOne").callsFake((query, callback) => {
+        const planet = planets[query.id];
+        if (planet) {
+            callback(null, planet);
+        } else {
+            callback(null, null);
+        }
+    });
+});
+
+afterEach(() => {
+    sinon.restore();
+});
 
 describe('Planets API Suite', () => {
 

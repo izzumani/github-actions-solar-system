@@ -31,12 +31,12 @@ jobs:
           with:
             node-version: ${{ matrix.node_version }}
         - name: Cache Node Modules
-          uses: actions/cache@v3
+          uses: actions/cache@v4
           with:
             # path: ~/.npm
             # key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules
             path: node_modules
-            key: ${{ runner.os }} --node-${{ matrix.node_version }}-modules${{ hashFiles('**/package-lock.json') }}
+            key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules-${{ hashFiles('**/package-lock.json') }}
 
         - name: Install Dependencies
           run: npm install
@@ -50,7 +50,7 @@ jobs:
           if: always()
           uses: actions/upload-artifact@v4
           with:
-            name: Mocha-Test-Result
+            name: Mocha-Test-Result-${{ matrix.os }}-node-${{ matrix.node_version }}
             path: test-results.xml
 
     code-coverage:
@@ -61,7 +61,7 @@ jobs:
           uses: actions/checkout@v4
         
         - name: Setup NodeJS Version - 18
-          uses: actions/setup-node@v3
+          uses: actions/setup-node@v4
           with:
             node-version: 18
         
@@ -108,7 +108,7 @@ jobs:
               -e MONGO_URI=$MONGO_URI \
               -e MONGO_USERNAME=$MONGO_USERNAME \
               -e MONGO_PASSWORD=$MONGO_PASSWORD \
-              ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+              ${{ vars.DOCKER_USERNAME }}/solar-system:${{ github.sha }}
 
             export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
             echo $IP
