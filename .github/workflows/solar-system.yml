@@ -30,7 +30,14 @@ jobs:
           uses: actions/setup-node@v4
           with:
             node-version: ${{ matrix.node_version }}
-    
+        - name: Cache Node Modules
+          uses: actions/cache@v3
+          with:
+            # path: ~/.npm
+            # key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules
+            path: node_modules
+            key: ${{ runner.os }} --node-${{ matrix.node_version }}-modules${{ hashFiles('**/package-lock.json') }}
+
         - name: Install Dependencies
           run: npm install
 
@@ -39,7 +46,8 @@ jobs:
           run: npm test
           
         - name: Archive Test Result
-          if: failure() && (steps.nodejs-unit-test-step.outcome == 'failure' || steps.nodejs-unit-test-step.outcome == 'success')
+          # if: failure() && (steps.nodejs-unit-test-step.outcome == 'failure' || steps.nodejs-unit-test-step.outcome == 'success')
+          if: always()
           uses: actions/upload-artifact@v4
           with:
             name: Mocha-Test-Result
