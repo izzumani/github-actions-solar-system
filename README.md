@@ -120,3 +120,26 @@ Depends on the unit-testing and code-coverage jobs. Performs the following steps
 - Builds the Docker image (without pushing) tagged as `<DOCKERHUB_USERNAME>/solar-system:<commit-sha>`
 - Runs the container locally with MongoDB environment variables and verifies the `/live` endpoint responds correctly
 
+---
+## Publish Package via GitHub Release
+
+The package publish workflow (`.github/workflows/publish-package.yml`) is triggered when a release is **published** on GitHub.
+
+### Prerequisites
+- Ensure your latest changes are pushed to the branch you want to release (typically `main`)
+- Ensure `package.json` has the correct package name and the version you want to publish
+
+### Steps to Initiate a Release in GitHub
+1. Open your repository on GitHub.
+2. Go to **Releases**.
+3. Click **Draft a new release**.
+4. Create/select a new tag (recommended format: `v6.7.7`) and choose the target branch.
+5. Add release title and notes.
+6. Click **Publish release**.
+
+### Verify Publish Pipeline
+1. Go to **Actions** tab in GitHub.
+2. Open the workflow run for **Publish Package to GitHub NPM Registry**.
+3. Confirm all steps pass, especially **Publish to GitHub Registry**.
+4. Verify the package appears under your repository/account **Packages** section.
+
