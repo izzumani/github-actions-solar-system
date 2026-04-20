@@ -169,7 +169,7 @@ jobs:
               ${{ vars.DOCKER_USERNAME }}/solar-system:${{ github.sha }}
               ghcr.io/${{ github.repository_owner }}/solar-system:${{ github.sha }}
 
-    dev-deploy
+    dev-deploy:
       needs: docker
       runs-on: ubuntu-latest
       steps:
@@ -185,7 +185,7 @@ jobs:
           with:
              method: kubeconfig
              kubeconfig: ${{ secrets.KUBE_CONFIG }}
-             
+
         - name: Fetch Kubernetes Cluster Details
           run: |
             kubectl version --short
