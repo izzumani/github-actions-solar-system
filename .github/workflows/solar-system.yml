@@ -75,6 +75,9 @@ jobs:
             image: mongo:latest
             options:
               --name mongo-db
+            env:
+              MONGO_INITDB_ROOT_USERNAME: non-prod-user
+              MONGO_INITDB_ROOT_PASSWORD: non-prod-password
       env:
         MONGO_URI: 'mongodb://mongo-db:27017/solar-system'
         MONGO_USERNAME: non-prod-user
@@ -102,7 +105,7 @@ jobs:
           run: npm install
         
         - name: Check Code coverage
-          continue-on-error: true
+          # continue-on-error: true
           run: npm run coverage
 
         - name: Archive Test Result
@@ -112,19 +115,19 @@ jobs:
             path: coverage
             retention-days: 5
 
-    reports-s3:
+    reports-azure-storage:
       needs: [code-coverage, unit-testing]
-      name: AWS S3 - Upload Reports
+      name: Azure Storage - Upload Reports
       runs-on: ubuntu-latest
-      continue-on-error: true
+      # continue-on-error: true
       steps:
         - name: Download Mocha Test Artifact
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: Mocha-Test-Result
 
         - name: Download Code Coverage Artifact
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: Code-Coverage-Result
 
