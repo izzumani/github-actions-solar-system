@@ -212,9 +212,7 @@ jobs:
         MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
       with:
         kubectl_version: "v1.35.0"
-          description: 'Version of kubectl to use'
         environment_name: development
-          description: 'Name of the environment to deploy to'
 
     dev-integration-testing:
       name: Dev Integration Testing
@@ -238,10 +236,8 @@ jobs:
         MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
       with:
         kubectl_version: "v1.35.0"
-          description: 'Version of kubectl to use'
         environment_name: production
-          description: 'Name of the environment to deploy to'
-          
+
       # environment:
       #   name: production
       #   url: https://${{ steps.set-ingress-host-address.outputs.APP_INGRESS_URL }}
