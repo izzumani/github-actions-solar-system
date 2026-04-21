@@ -79,7 +79,7 @@ jobs:
               MONGO_INITDB_ROOT_USERNAME: non-prod-user
               MONGO_INITDB_ROOT_PASSWORD: non-prod-password
       env:
-        MONGO_URI: 'mongodb://mongo-db:27017/solar-system'
+        MONGO_URI: 'mongodb://mongo-db:27017/solar-system?authSource=admin'
         MONGO_USERNAME: non-prod-user
         MONGO_PASSWORD: non-prod-password
 
