@@ -1,12 +1,39 @@
 let mongoose = require("mongoose");
-let { app: server } = require("./app");
+let { app: server, planetModel } = require("./app");
 let chai = require("chai");
 let chaiHttp = require("chai-http");
 
 
 // Assertion 
 chai.should();
-chai.use(chaiHttp); 
+chai.use(chaiHttp);
+
+const testPlanets = [
+    { id: 1, name: "Mercury", description: "", image: "", velocity: "", distance: "" },
+    { id: 2, name: "Venus",   description: "", image: "", velocity: "", distance: "" },
+    { id: 3, name: "Earth",   description: "", image: "", velocity: "", distance: "" },
+    { id: 4, name: "Mars",    description: "", image: "", velocity: "", distance: "" },
+    { id: 5, name: "Jupiter", description: "", image: "", velocity: "", distance: "" },
+    { id: 6, name: "Saturn",  description: "", image: "", velocity: "", distance: "" },
+    { id: 7, name: "Uranus",  description: "", image: "", velocity: "", distance: "" },
+    { id: 8, name: "Neptune", description: "", image: "", velocity: "", distance: "" },
+];
+
+before(async function() {
+    this.timeout(15000);
+    if (mongoose.connection.readyState !== 1) {
+        await new Promise((resolve, reject) => {
+            mongoose.connection.once('connected', resolve);
+            mongoose.connection.once('error', reject);
+        });
+    }
+    await planetModel.deleteMany({ id: { $in: testPlanets.map(p => p.id) } });
+    await planetModel.insertMany(testPlanets);
+});
+
+after(async function() {
+    await planetModel.deleteMany({ id: { $in: testPlanets.map(p => p.id) } });
+});
 
 describe('Planets API Suite', () => {
 
