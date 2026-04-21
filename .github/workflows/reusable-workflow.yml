@@ -3,14 +3,16 @@ name: Deployment - Resusable Workflow
 on:
   workflow_call:
     inputs:
-     kubectl_version:
+      kubectl_version:
         description: 'Version of kubectl to use'
         required: false
         default: 'v1.35.0'
-     environment_name:
+        type: string
+      environment_name:
         description: 'Name of the environment to deploy to'
         required: true
         default: development
+        type: string
     secrets:
       KUBE_CONFIG:
         required: true
@@ -19,9 +21,9 @@ on:
     outputs:
       application_ingress_url:
         description: 'URL of the application ingress'
-        value: ${{ jobs.reuse:deploy.outputs.APP_INGRESS_URL }}
-  jobs:
-    reuse:deploy:
+        value: ${{ jobs.reuse-deploy.outputs.APP_INGRESS_URL }}
+jobs:
+    reuse-deploy:
       environment:
         name: ${{ inputs.environment_name }}
         url: https://${{ steps.set-ingress-host-address.outputs.APP_INGRESS_URL }}
