@@ -124,12 +124,13 @@ jobs:
         - name: Download Mocha Test Artifact
           uses: actions/download-artifact@v4
           with:
-            name: Mocha-Test-Result
+            pattern: Mocha-Test-Result-*
+            merge-multiple: true
 
         - name: Download Code Coverage Artifact
           uses: actions/download-artifact@v4
           with:
-            name: Code-Coverage-Result
+            name: Code-coverage-Result
 
         - name: Merge Test Files
           run: |
@@ -263,7 +264,7 @@ jobs:
 
       #   - name: Fetch Kubernetes Cluster Details
       #     run: |
-      #       kubectl version --short
+      #       kubectl version
       #       echo "-----------------------------"
       #       kubectl get nodes -o wide
       #       echo "-----------------------------"
