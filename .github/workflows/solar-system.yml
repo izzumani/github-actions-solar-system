@@ -39,16 +39,21 @@ jobs:
           uses: actions/setup-node@v4
           with:
             node-version: ${{ matrix.node_version }}
-        - name: Cache Node Modules
-          uses: actions/cache@v4
-          with:
-            # path: ~/.npm
-            # key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules
-            path: node_modules
-            key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules-${{ hashFiles('**/package-lock.json') }}
+        # - name: Cache Node Modules
+        #   uses: actions/cache@v4
+        #   with:
+        #     # path: ~/.npm
+        #     # key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules
+        #     path: node_modules
+        #     key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules-${{ hashFiles('**/package-lock.json') }}
 
-        - name: Install Dependencies
-          run: npm install
+        - name : Composite Action - Cache and Install NPM packages
+          uses: ./.github/workflows/custom-actions/npm-action
+          with:
+            path-of-folder: node_modules
+
+        # - name: Install Dependencies
+        #   run: npm install
 
         - name: Unit Testing
           id: nodejs-unit-test-step
@@ -93,17 +98,22 @@ jobs:
         #   with:
         #     node-version: 18
         
-        - name: Cache Node Modules
-          uses: actions/cache@v4
-          with:
-            # path: ~/.npm
-            # key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules
-            path: node_modules
-            key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules-${{ hashFiles('**/package-lock.json') }}
+        # - name: Cache Node Modules
+        #   uses: actions/cache@v4
+        #   with:
+        #     # path: ~/.npm
+        #     # key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules
+        #     path: node_modules
+        #     key: ${{ runner.os }}-node-${{ matrix.node_version }}-modules-${{ hashFiles('**/package-lock.json') }}
 
-        - name: Install Dependencies
-          run: npm install
+        # - name: Install Dependencies
+        #   run: npm install
         
+        - name : Composite Action - Cache and Install NPM packages
+          uses: ./.github/workflows/custom-actions/npm-action
+          with:
+            path-of-folder: node_modules
+
         - name: Check Code coverage
           continue-on-error: true
           run: npm run coverage
@@ -324,3 +334,21 @@ jobs:
             echo $URL
             echo "-------------------------------------"
             curl https://$URL/live -s -k | jq -r .status | grep -i live
+
+    slack-notification:
+      if: always()
+      name: Slack Notification
+      needs: [dev-integration-testing, prod-integration-testing]
+      continue-on-error: true
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - name: Slack Notification
+          uses: rtCamp/action-slack-notify@v2
+          env:
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+            SLACK_CHANNEL: github-actions-channel
+            SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+            SLACK_ICON: https://gitlab.com/sidd-harth/solar-system/-/raw/main/images/saturn.png
+            SLACK_MESSAGE: ':hammer_and_wrench: Triggered by ${{github.actor}}'
+            SLACK_TITLE: Information
