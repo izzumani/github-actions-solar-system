@@ -75,12 +75,13 @@ jobs:
             cat kubernetes/${{ inputs.environment_name }}/ingress.yaml
         
         - name: Create MongoDB Secret
+          # continue-on-error: true
           run: |
             kubectl create secret generic mongo-secret \
               --from-literal=MONGO_URI=$MONGO_URI \
               --from-literal=MONGO_USERNAME=$MONGO_USERNAME \
               --from-literal=MONGO_PASSWORD=$MONGO_PASSWORD \
-              -- save-config -o yaml --dry-run=client | kubectl apply -f -
+              --save-config -o yaml --dry-run=client | kubectl apply -f -
         
         - name: Deploy to Dev Env
           run: |
