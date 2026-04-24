@@ -51,9 +51,32 @@ jobs:
             kubectl get nodes -o wide
             echo "-----------------------------"
 
-        - name: Save Nginx Ingress Controller IP as a GitHub Environment Variable
+       - name: Save Nginx Ingress Controller IP as a GitHub Environment Variable
           run: |
-            echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> "$GITHUB_ENV"
+            # 1. Make sure the namespace exists
+            if ! kubectl get namespace ingress-nginx >/dev/null 2>&1; then
+            echo "::error::Namespace 'ingress-nginx' not found. Install NGINX Ingress Controller on the cluster first."
+            exit 1
+            fi
+
+            # 2. Read the IP from spec.externalIPs[0] (our Option A setup)
+            #    Fallback to status.loadBalancer.ingress[0].ip (standard LoadBalancer setup)
+            INGRESS_IP=$(kubectl -n ingress-nginx get svc ingress-nginx-controller \
+              -o jsonpath='{.spec.externalIPs[0]}' 2>/dev/null || true)
+
+            if [ -z "$INGRESS_IP" ]; then
+              INGRESS_IP=$(kubectl -n ingress-nginx get svc ingress-nginx-controller \
+              -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
+            fi
+
+            # 3. Fail loudly if we still have nothing
+            if [ -z "$INGRESS_IP" ]; then
+              echo "::error::Could not resolve ingress controller IP from spec.externalIPs or status.loadBalancer."
+              exit 1
+            fi
+
+            echo "INGRESS_IP=$INGRESS_IP" >> "$GITHUB_ENV"
+            echo "Resolved INGRESS_IP=$INGRESS_IP"
 
         - name: Replace Tokens in Manifest Files
           uses: cschleiden/replace-tokens@v1
