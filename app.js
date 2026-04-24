@@ -3,6 +3,7 @@ const express = require('express');
 const OS = require('os');
 const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
+require('dotenv').config();
 const app = express();
 const cors = require('cors')
 
@@ -104,9 +105,11 @@ app.get('/ready',   function(req, res) {
     });
 })
 
-app.listen(3000, () => {
-    console.log("Server successfully running on port - " +3000);
-})
+if (require.main === module) {
+    app.listen(3000, () => {
+        console.log("Server successfully running on port - " +3000);
+    })
+}
 
 
-module.exports = app;
+module.exports = { app, planetModel };

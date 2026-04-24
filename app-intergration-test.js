@@ -1,5 +1,4 @@
 let mongoose = require("mongoose");
-let sinon = require("sinon");
 let { app: server, planetModel } = require("./app");
 let chai = require("chai");
 let chaiHttp = require("chai-http");
@@ -7,33 +6,33 @@ let chaiHttp = require("chai-http");
 
 // Assertion 
 chai.should();
-chai.use(chaiHttp); 
+chai.use(chaiHttp);
 
-// Mock planet data
-const planets = {
-    1: { id: 1, name: "Mercury" },
-    2: { id: 2, name: "Venus" },
-    3: { id: 3, name: "Earth" },
-    4: { id: 4, name: "Mars" },
-    5: { id: 5, name: "Jupiter" },
-    6: { id: 6, name: "Saturn" },
-    7: { id: 7, name: "Uranus" },
-    8: { id: 8, name: "Neptune" },
-};
+const testPlanets = [
+    { id: 1, name: "Mercury", description: "", image: "", velocity: "", distance: "" },
+    { id: 2, name: "Venus",   description: "", image: "", velocity: "", distance: "" },
+    { id: 3, name: "Earth",   description: "", image: "", velocity: "", distance: "" },
+    { id: 4, name: "Mars",    description: "", image: "", velocity: "", distance: "" },
+    { id: 5, name: "Jupiter", description: "", image: "", velocity: "", distance: "" },
+    { id: 6, name: "Saturn",  description: "", image: "", velocity: "", distance: "" },
+    { id: 7, name: "Uranus",  description: "", image: "", velocity: "", distance: "" },
+    { id: 8, name: "Neptune", description: "", image: "", velocity: "", distance: "" },
+];
 
-beforeEach(() => {
-    sinon.stub(planetModel, "findOne").callsFake((query, callback) => {
-        const planet = planets[query.id];
-        if (planet) {
-            callback(null, planet);
-        } else {
-            callback(null, null);
-        }
-    });
+before(async function() {
+    this.timeout(15000);
+    if (mongoose.connection.readyState !== 1) {
+        await new Promise((resolve, reject) => {
+            mongoose.connection.once('connected', resolve);
+            mongoose.connection.once('error', reject);
+        });
+    }
+    await planetModel.deleteMany({ id: { $in: testPlanets.map(p => p.id) } });
+    await planetModel.insertMany(testPlanets);
 });
 
-afterEach(() => {
-    sinon.restore();
+after(async function() {
+    await planetModel.deleteMany({ id: { $in: testPlanets.map(p => p.id) } });
 });
 
 describe('Planets API Suite', () => {
