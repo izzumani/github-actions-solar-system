@@ -51,7 +51,7 @@ jobs:
             kubectl get nodes -o wide
             echo "-----------------------------"
 
-       - name: Save Nginx Ingress Controller IP as a GitHub Environment Variable
+        - name: Save Nginx Ingress Controller IP as a GitHub Environment Variable
           run: |
             # 1. Make sure the namespace exists
             if ! kubectl get namespace ingress-nginx >/dev/null 2>&1; then
