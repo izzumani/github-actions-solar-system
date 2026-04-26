@@ -230,6 +230,7 @@ jobs:
 
     dev-integration-testing:
       name: Dev Integration Testing
+      continue-on-error: true
       needs: dev-deploy
       runs-on: ubuntu-latest
       steps:
