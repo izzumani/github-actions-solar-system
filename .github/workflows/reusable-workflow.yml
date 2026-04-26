@@ -103,8 +103,12 @@ jobs:
 
         - name: Create MongoDB Secret
           # continue-on-error: true
+          env:
+            MONGO_URI: mongodb://mongo-db:27017/solar-system?authSource=admin
+            MONGO_USERNAME: non-prod-user
+            MONGO_PASSWORD: non-prod-password
           run: |
-            kubectl create secret generic mongo-secret \
+            kubectl create secret generic mongo-db-creds -n ${{ vars.NAMESPACE }} \
               --from-literal=MONGO_URI=$MONGO_URI \
               --from-literal=MONGO_USERNAME=$MONGO_USERNAME \
               --from-literal=MONGO_PASSWORD=$MONGO_PASSWORD \
@@ -112,6 +116,8 @@ jobs:
         
         - name: Deploy to Dev Env
           run: |
+            kubectl apply -f kubernetes/${{ inputs.environment_name }}/mongo-deployment.yaml
+            kubectl apply -f kubernetes/${{ inputs.environment_name }}/mongo-service.yaml
             kubectl apply -f kubernetes/${{ inputs.environment_name }}/deployment.yaml
             kubectl apply -f kubernetes/${{ inputs.environment_name }}/service.yaml
             kubectl apply -f kubernetes/${{ inputs.environment_name }}/ingress.yaml
