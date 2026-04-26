@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mongo-db
+  name: mongo-db
+  namespace: _{_NAMESPACE_}_
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-db
+  template:
+    metadata:
+      labels:
+        app: mongo-db
+    spec:
+      containers:
+      - image: mongo:latest
+        name: mongo-db
+        ports:
+        - containerPort: 27017
+          name: mongo
+          protocol: TCP
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: non-prod-user
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: non-prod-password
