@@ -97,6 +97,10 @@ jobs:
             echo "-----------------------------"
             cat kubernetes/${{ inputs.environment_name }}/ingress.yaml
         
+        - name: Create Namespace
+          run: |
+            kubectl create namespace ${{ vars.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
         - name: Create MongoDB Secret
           # continue-on-error: true
           run: |
